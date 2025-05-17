@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-app
+  labels:
+    app: nodejs-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nodejs-app
+  template:
+    metadata:
+      labels:
+        app: nodejs-app
+    spec:
+      containers:
+      - name: nodejs-container
+        image: your-docker-registry/your-nodejs-app:latest # Replace with your image
+        ports:
+        - containerPort: 3001 #  the port your app listens on
+        env:
+        - name: NODE_ENV
+          value: "dev"
+          value: "staging"
+          value: "prod" #  environment variable
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-service
+spec:
+  selector:
+    app: nodejs-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3001 # Match the containerPort above
+  type: NodePort # Use ClusterIP, NodePort, or LoadBalancer based on your needs
